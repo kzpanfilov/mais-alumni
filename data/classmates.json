@@ -155,6 +155,20 @@
       "ok": null
     },
     {
+      "name": "Красноселова Олеся",
+      "className": "11а",
+      "role": "",
+      "memory": "",
+      "occupation": "",
+      "city": "",
+      "phone": "",
+      "vk": "",
+      "thenPhoto": null,
+      "nowPhoto": null,
+      "id": 1784482744128,
+      "addedAt": "2026-07-19T17:39:04.128Z"
+    },
+    {
       "id": 15,
       "name": "Кузнецов Алексей",
       "className": "11б",
@@ -337,7 +351,7 @@
       "ok": "https://ok.ru/profile/574438177172"
     },
     {
-      "name": "Красноселова Олеся",
+      "name": "Никитина Елизавета",
       "className": "11а",
       "role": "",
       "memory": "",
@@ -347,8 +361,8 @@
       "vk": "",
       "thenPhoto": null,
       "nowPhoto": null,
-      "id": 1784482744128,
-      "addedAt": "2026-07-19T17:39:04.128Z"
+      "id": 1784482936010,
+      "addedAt": "2026-07-19T17:42:16.010Z"
     }
   ]
 }
