@@ -225,6 +225,20 @@
       "addedAt": "2026-07-19T11:03:45.354Z"
     },
     {
+      "name": "Митрофанова Антонина",
+      "className": "11б",
+      "role": "",
+      "memory": "",
+      "occupation": "",
+      "city": "",
+      "phone": "",
+      "vk": "",
+      "thenPhoto": null,
+      "nowPhoto": null,
+      "id": 1784482598839,
+      "addedAt": "2026-07-19T17:36:38.839Z"
+    },
+    {
       "id": 21,
       "name": "Никитин Николай",
       "className": "11а",
@@ -323,8 +337,8 @@
       "ok": "https://ok.ru/profile/574438177172"
     },
     {
-      "name": "Митрофанова Антонина",
-      "className": "11б",
+      "name": "Красноселова Олеся",
+      "className": "11а",
       "role": "",
       "memory": "",
       "occupation": "",
@@ -333,8 +347,8 @@
       "vk": "",
       "thenPhoto": null,
       "nowPhoto": null,
-      "id": 1784482598839,
-      "addedAt": "2026-07-19T17:36:38.839Z"
+      "id": 1784482744128,
+      "addedAt": "2026-07-19T17:39:04.128Z"
     }
   ]
 }
