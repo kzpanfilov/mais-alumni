@@ -321,6 +321,20 @@
       "phone": null,
       "vk": null,
       "ok": "https://ok.ru/profile/574438177172"
+    },
+    {
+      "name": "Митрофанова Антонина",
+      "className": "11б",
+      "role": "",
+      "memory": "",
+      "occupation": "",
+      "city": "",
+      "phone": "",
+      "vk": "",
+      "thenPhoto": null,
+      "nowPhoto": null,
+      "id": 1784482598839,
+      "addedAt": "2026-07-19T17:36:38.839Z"
     }
   ]
 }
