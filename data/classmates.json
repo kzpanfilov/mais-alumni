@@ -307,6 +307,20 @@
       "phone": null,
       "vk": null,
       "ok": "https://ok.ru/profile/574438177172"
+    },
+    {
+      "name": "Любина Екатерина",
+      "className": "11а",
+      "role": "",
+      "memory": "",
+      "occupation": "",
+      "city": "с. Маис",
+      "phone": "",
+      "vk": "",
+      "thenPhoto": null,
+      "nowPhoto": null,
+      "id": 1784459025354,
+      "addedAt": "2026-07-19T11:03:45.354Z"
     }
   ]
 }
