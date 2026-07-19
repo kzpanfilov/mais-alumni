@@ -293,6 +293,20 @@
       "phone": null,
       "vk": "https://vk.com/id385206759",
       "ok": "https://ok.ru/profile/572542904668"
+    },
+    {
+      "name": "Елена Почивалова",
+      "className": "11а",
+      "role": "",
+      "memory": "",
+      "occupation": "",
+      "city": "",
+      "phone": "",
+      "vk": "",
+      "thenPhoto": null,
+      "nowPhoto": null,
+      "id": 1784440163753,
+      "addedAt": "2026-07-19T05:49:23.753Z"
     }
   ]
 }
