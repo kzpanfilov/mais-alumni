@@ -267,6 +267,20 @@
       "ok": null
     },
     {
+      "name": "Никитина Елизавета",
+      "className": "11а",
+      "role": "",
+      "memory": "",
+      "occupation": "",
+      "city": "",
+      "phone": "",
+      "vk": "",
+      "thenPhoto": null,
+      "nowPhoto": null,
+      "id": 1784482936010,
+      "addedAt": "2026-07-19T17:42:16.010Z"
+    },
+    {
       "id": 22,
       "name": "Панцырев Александр",
       "className": "11б",
@@ -351,8 +365,8 @@
       "ok": "https://ok.ru/profile/574438177172"
     },
     {
-      "name": "Никитина Елизавета",
-      "className": "11а",
+      "name": "Емелин Николай",
+      "className": "11б",
       "role": "",
       "memory": "",
       "occupation": "",
@@ -361,8 +375,8 @@
       "vk": "",
       "thenPhoto": null,
       "nowPhoto": null,
-      "id": 1784482936010,
-      "addedAt": "2026-07-19T17:42:16.010Z"
+      "id": 1784484096131,
+      "addedAt": "2026-07-19T18:01:36.131Z"
     }
   ]
 }
