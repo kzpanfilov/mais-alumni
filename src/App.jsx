@@ -1,0 +1,52 @@
+import { HashRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import Navbar from './components/Navbar';
+import Footer from './components/Footer';
+import Gate from './components/Gate';
+import Home from './pages/Home';
+import About from './pages/About';
+import Class11A from './pages/Class11A';
+import Class11B from './pages/Class11B';
+import Teachers from './pages/Teachers';
+import Gallery from './pages/Gallery';
+import News from './pages/News';
+import AddClassmate from './pages/AddClassmate';
+import './App.css';
+
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+}
+
+function App() {
+  const [unlocked, setUnlocked] = useState(() => {
+    return !!localStorage.getItem('mais-gate');
+  });
+
+  if (!unlocked) {
+    return <Gate onUnlock={() => setUnlocked(true)} />;
+  }
+
+  return (
+    <HashRouter>
+      <ScrollToTop />
+      <Navbar />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/class11a" element={<Class11A />} />
+        <Route path="/class11b" element={<Class11B />} />
+        <Route path="/teachers" element={<Teachers />} />
+        <Route path="/gallery" element={<Gallery />} />
+        <Route path="/news" element={<News />} />
+        <Route path="/add" element={<AddClassmate />} />
+      </Routes>
+      <Footer />
+    </HashRouter>
+  );
+}
+
+export default App;
