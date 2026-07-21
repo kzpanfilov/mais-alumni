@@ -121,6 +121,7 @@ function EditModal({ student, onSave, onClose, isOwner }) {
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
         onClick={e => e.stopPropagation()}
+        className="modal-content"
         style={{
           background: 'var(--bg-card)', borderRadius: 12,
           padding: 24, maxWidth: 480, width: '100%',
@@ -138,7 +139,7 @@ function EditModal({ student, onSave, onClose, isOwner }) {
               <label style={{ display: 'block', marginBottom: 4, fontWeight: 600, fontSize: '0.8rem' }}>ФИО</label>
               <input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} style={inputStyle} />
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 12 }}>
+            <div className="modal-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 12 }}>
               <div>
                 <label style={{ display: 'block', marginBottom: 4, fontWeight: 600, fontSize: '0.8rem' }}>Класс</label>
                 <select value={form.className} onChange={e => setForm({ ...form, className: e.target.value })} style={{ ...inputStyle, background: 'white' }}>
@@ -154,7 +155,7 @@ function EditModal({ student, onSave, onClose, isOwner }) {
           </>
         )}
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 12 }}>
+        <div className="modal-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 12 }}>
           <div>
             <label style={{ display: 'block', marginBottom: 4, fontWeight: 600, fontSize: '0.8rem' }}>Профессия</label>
             <input value={form.occupation} onChange={e => setForm({ ...form, occupation: e.target.value })} style={inputStyle} />
@@ -170,7 +171,7 @@ function EditModal({ student, onSave, onClose, isOwner }) {
           <textarea value={form.memory} onChange={e => setForm({ ...form, memory: e.target.value })} rows={3} style={{ ...inputStyle, resize: 'vertical' }} />
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 16 }}>
+        <div className="modal-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 16 }}>
           <div>
             <label style={{ display: 'block', marginBottom: 4, fontWeight: 600, fontSize: '0.8rem' }}>Фото школьное</label>
             <input ref={thenRef} type="file" accept="image/*" onChange={e => handleFile(e, 'then')} style={{ display: 'none' }} />

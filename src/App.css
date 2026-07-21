@@ -788,12 +788,21 @@ h1, h2, h3, h4 {
 
 /* Responsive */
 @media (max-width: 768px) {
+  .hero {
+    padding: 60px 16px 40px;
+  }
+
   .hero h1 {
     font-size: 1.8rem;
   }
 
   .hero .subtitle {
-    font-size: 1rem;
+    font-size: 0.95rem;
+  }
+
+  .hero .year-badge {
+    font-size: 0.85rem;
+    padding: 6px 16px;
   }
 
   .navbar-links {
@@ -804,32 +813,73 @@ h1, h2, h3, h4 {
     right: 0;
     background: white;
     flex-direction: column;
-    padding: 16px;
-    box-shadow: var(--shadow);
-    gap: 4px;
+    padding: 12px 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    gap: 2px;
+    max-height: calc(100vh - 64px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 0 0 12px 12px;
   }
 
   .navbar-links.open {
     display: flex;
   }
 
-  .navbar-links a {
+  .navbar-links a,
+  .navbar-links button {
     width: 100%;
     text-align: center;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .navbar-links a:hover,
+  .navbar-links a.active {
+    transform: none;
   }
 
   .mobile-menu-btn {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    font-size: 1.5rem;
   }
 
   .cards-grid,
-  .news-grid,
-  .gallery-grid {
+  .news-grid {
     grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .gallery-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 8px;
   }
 
   .stats-bar {
     grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-top: -24px;
+  }
+
+  .stat-card {
+    padding: 16px 12px;
+  }
+
+  .stat-card .stat-number {
+    font-size: 1.5rem;
+  }
+
+  .stat-card .stat-label {
+    font-size: 0.75rem;
   }
 
   .timeline::before {
@@ -852,27 +902,289 @@ h1, h2, h3, h4 {
   }
 
   .section {
-    padding: 40px 16px;
+    padding: 32px 16px;
+  }
+
+  .section-title h2 {
+    font-size: 1.5rem;
   }
 
   .cta-section {
-    padding: 32px 20px;
+    padding: 28px 20px;
+    border-radius: 12px;
+  }
+
+  .cta-section h2 {
+    font-size: 1.3rem;
+  }
+
+  .cta-section p {
+    font-size: 0.9rem;
+  }
+
+  .cta-button {
+    padding: 10px 24px;
+    font-size: 0.9rem;
+  }
+
+  .footer {
+    padding: 32px 16px 20px;
+  }
+
+  .footer-content {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+  }
+
+  .footer-section h4 {
+    font-size: 0.9rem;
+  }
+
+  .footer-section p,
+  .footer-section a {
+    font-size: 0.85rem;
+  }
+
+  .container {
+    padding: 0 16px;
+  }
+
+  .tile-card {
+    padding: 20px;
+  }
+
+  .tile-card h3 {
+    font-size: 1rem;
+  }
+
+  .tile-card p {
+    font-size: 0.85rem;
+  }
+
+  .news-card {
+    padding: 16px;
+  }
+
+  .news-card h3 {
+    font-size: 1rem;
+  }
+
+  .news-card p {
+    font-size: 0.85rem;
+  }
+
+  .filter-bar {
+    gap: 6px;
+  }
+
+  .filter-btn {
+    padding: 6px 14px;
+    font-size: 0.8rem;
   }
 }
 
 @media (max-width: 480px) {
+  .hero h1 {
+    font-size: 1.5rem;
+    line-height: 1.3;
+  }
+
   .stats-bar {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
   }
 
   .student-card-header {
     flex-direction: column;
     text-align: center;
+    padding: 16px;
+  }
+
+  .student-avatar,
+  .student-avatar-photo {
+    width: 60px;
+    height: 60px;
+  }
+
+  .student-card-body {
+    padding: 12px 16px;
+  }
+
+  .student-info h3 {
+    font-size: 0.95rem;
   }
 
   .teacher-card {
     flex-direction: column;
     align-items: center;
     text-align: center;
+    padding: 20px 16px;
+  }
+
+  .gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+  }
+
+  .section-title h2 {
+    font-size: 1.3rem;
+  }
+
+  .section-title p {
+    font-size: 0.85rem;
+  }
+
+  .navbar-brand span {
+    font-size: 0.95rem;
+  }
+
+  .navbar-brand .logo-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .hero {
+    padding: 50px 12px 32px;
+  }
+
+  .hero h1 {
+    font-size: 1.3rem;
+  }
+
+  .stats-bar {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .stat-card {
+    padding: 12px 8px;
+  }
+
+  .stat-card .stat-number {
+    font-size: 1.3rem;
+  }
+
+  .stat-card .stat-label {
+    font-size: 0.7rem;
+  }
+
+  .gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 4px;
+  }
+
+  .gallery-item {
+    aspect-ratio: 1;
+  }
+
+  .cards-grid {
+    gap: 12px;
+  }
+
+  .news-grid {
+    gap: 12px;
+  }
+
+  .cta-section {
+    padding: 24px 16px;
+  }
+
+  .cta-section h2 {
+    font-size: 1.15rem;
+  }
+
+  .news-card {
+    padding: 14px;
+    border-left-width: 3px;
+  }
+}
+
+/* Admin responsive */
+@media (max-width: 768px) {
+  .admin-tabs {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .admin-stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+  }
+
+  .admin-actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .admin-list-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-tabs {
+    gap: 4px;
+  }
+
+  .admin-tabs button {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+  }
+
+  .admin-stats-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Modal responsive */
+@media (max-width: 480px) {
+  .modal-content {
+    padding: 16px;
+    margin: 8px;
+    border-radius: 12px;
+  }
+
+  .modal-grid-2 {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Touch-friendly interactive elements */
+@media (pointer: coarse) {
+  .filter-btn {
+    min-height: 40px;
+    min-width: 40px;
+  }
+
+  .navbar-links a,
+  .navbar-links button {
+    min-height: 44px;
+  }
+}
+
+/* Safe area for notched phones */
+@supports (padding: env(safe-area-inset-bottom)) {
+  .footer {
+    padding-bottom: calc(20px + env(safe-area-inset-bottom));
+  }
+}
+
+/* Print styles */
+@media print {
+  .navbar, .mobile-menu-btn, .footer, .cta-section {
+    display: none;
+  }
+
+  .hero {
+    margin-top: 0;
+    padding: 20px;
+  }
+
+  .section {
+    padding: 16px;
   }
 }

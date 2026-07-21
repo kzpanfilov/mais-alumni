@@ -111,7 +111,7 @@ export default function Admin() {
       <section className="section">
         <div className="container" style={{ maxWidth: 900 }}>
 
-          <div style={{ display: 'flex', gap: 8, marginBottom: 24, justifyContent: 'center', flexWrap: 'wrap' }}>
+          <div className="admin-tabs" style={{ display: 'flex', gap: 8, marginBottom: 24, justifyContent: 'center', flexWrap: 'wrap' }}>
             <button onClick={() => setTab('news')} style={{
               ...btnStyle,
               background: tab === 'news' ? 'var(--accent)' : '#eee',
@@ -187,7 +187,7 @@ export default function Admin() {
             <div>
               {stats ? (
                 <div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+                  <div className="admin-stats-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, flexWrap: 'wrap', gap: 8 }}>
                     <h2 style={{ margin: 0, fontSize: '1.2rem' }}>Статистика</h2>
                     <button onClick={async () => {
                       setSyncing(true);
@@ -199,7 +199,7 @@ export default function Admin() {
                     </button>
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 16, marginBottom: 32 }}>
+                  <div className="admin-stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 16, marginBottom: 32 }}>
                     {[
                       { label: 'Всего визитов', value: stats.total },
                       { label: 'Сегодня', value: stats.today },
