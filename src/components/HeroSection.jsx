@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 
-const BASE = import.meta.env.BASE_URL || '/';
-const DEFAULT_BG = `${BASE}photos/school.jpg`;
+const CLOUDINARY = 'https://res.cloudinary.com/tkurdji3/image/upload';
+const DEFAULT_BG = `${CLOUDINARY}/mais-alumni/school.jpg`;
 const DEFAULT_GRADIENT = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
 
 export default function HeroSection({ title, subtitle, badge, gradient, backgroundImage }) {

@@ -138,15 +138,21 @@ export async function addClassmate(newStudent) {
   return saveClassmates(all);
 }
 
-export async function uploadPhotoToImgbb(base64Data) {
-  const IMGBB_KEY = 'ab404d8a40f20d05dd5c22811225b138';
+const CLOUDINARY_CLOUD = 'tkurdji3';
+const CLOUDINARY_UPLOAD_PRESET = 'mais-alumni';
+
+export async function uploadPhotoToCloudinary(base64Data) {
   const formData = new FormData();
-  formData.append('key', IMGBB_KEY);
-  formData.append('image', base64Data);
-  const res = await fetch('https://api.imgbb.com/1/upload', { method: 'POST', body: formData });
+  formData.append('file', `data:image/jpeg;base64,${base64Data}`);
+  formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+  formData.append('folder', 'mais-alumni/classmates');
+  const res = await fetch(
+    `https://api.cloudinary.com/v1_/${CLOUDINARY_CLOUD}/image/upload`,
+    { method: 'POST', body: formData }
+  );
   if (!res.ok) throw new Error('Upload failed');
   const result = await res.json();
-  return result.data.url;
+  return result.secure_url;
 }
 
 export function isAdmin() {

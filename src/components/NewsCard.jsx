@@ -9,6 +9,36 @@ export default function NewsCard({ item, index = 0 }) {
     новость: '#74b9ff',
   };
 
+  const renderMedia = () => {
+    if (item.image) {
+      return (
+        <div style={{ margin: '12px 0', borderRadius: 8, overflow: 'hidden' }}>
+          <img src={item.image} alt={item.title}
+            style={{ width: '100%', maxHeight: 300, objectFit: 'cover', display: 'block' }} />
+        </div>
+      );
+    }
+    if (item.video) {
+      if (item.videoType === 'file') {
+        return (
+          <div style={{ margin: '12px 0', borderRadius: 8, overflow: 'hidden' }}>
+            <video src={item.video} controls
+              style={{ width: '100%', maxHeight: 350, display: 'block' }} />
+          </div>
+        );
+      }
+      return (
+        <div style={{ margin: '12px 0', borderRadius: 8, overflow: 'hidden', position: 'relative', paddingBottom: '56.25%', height: 0 }}>
+          <iframe src={item.video} frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }} />
+        </div>
+      );
+    }
+    return null;
+  };
+
   return (
     <motion.div
       className="news-card"
@@ -26,7 +56,8 @@ export default function NewsCard({ item, index = 0 }) {
       </span>
       <h3>{item.title}</h3>
       <div className="news-date">{new Date(item.date).toLocaleDateString('ru-RU', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
-      <p>{item.text}</p>
+      {renderMedia()}
+      {item.text && <p>{item.text}</p>}
     </motion.div>
   );
 }

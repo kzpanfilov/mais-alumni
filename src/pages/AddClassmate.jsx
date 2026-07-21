@@ -1,24 +1,7 @@
 import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import HeroSection from '../components/HeroSection';
-import { fetchClassmates, saveClassmates } from '../data/jsonbin';
-
-const IMGBB_API_KEY = 'ab404d8a40f20d05dd5c22811225b138';
-
-async function uploadToImgbb(base64Data) {
-  const formData = new FormData();
-  formData.append('key', IMGBB_API_KEY);
-  formData.append('image', base64Data);
-
-  const response = await fetch('https://api.imgbb.com/1/upload', {
-    method: 'POST',
-    body: formData,
-  });
-
-  if (!response.ok) throw new Error('Ошибка загрузки');
-  const result = await response.json();
-  return result.data.url;
-}
+import { fetchClassmates, saveClassmates, uploadPhotoToCloudinary } from '../data/jsonbin';
 
 export default function AddClassmate() {
   const [formData, setFormData] = useState({
@@ -72,12 +55,12 @@ export default function AddClassmate() {
 
       if (thenPhotoPreview && !thenPhotoUrl) {
         const base64 = thenPhotoPreview.split(',')[1];
-        thenPhotoUrl = await uploadToImgbb(base64);
+        thenPhotoUrl = await uploadPhotoToCloudinary(base64);
       }
 
       if (nowPhotoPreview && !nowPhotoUrl) {
         const base64 = nowPhotoPreview.split(',')[1];
-        nowPhotoUrl = await uploadToImgbb(base64);
+        nowPhotoUrl = await uploadPhotoToCloudinary(base64);
       }
 
       const existing = await fetchClassmates();

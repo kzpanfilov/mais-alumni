@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { isAdmin, deleteClassmate, updateClassmate, uploadPhotoToImgbb } from '../data/jsonbin';
+import { isAdmin, deleteClassmate, updateClassmate, uploadPhotoToCloudinary } from '../data/jsonbin';
 
 const BASE = import.meta.env.BASE_URL || '/';
 
@@ -72,11 +72,11 @@ function EditModal({ student, onSave, onClose, isOwner }) {
 
       if (thenFile) {
         const base64 = thenFile.split(',')[1];
-        thenPhoto = await uploadPhotoToImgbb(base64);
+        thenPhoto = await uploadPhotoToCloudinary(base64);
       }
       if (nowFile) {
         const base64 = nowFile.split(',')[1];
-        nowPhoto = await uploadPhotoToImgbb(base64);
+        nowPhoto = await uploadPhotoToCloudinary(base64);
       }
 
       const updates = { thenPhoto, nowPhoto };

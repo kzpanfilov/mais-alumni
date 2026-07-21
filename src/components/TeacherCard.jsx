@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { isAdmin, uploadPhotoToImgbb } from '../data/jsonbin';
+import { isAdmin, uploadPhotoToCloudinary } from '../data/jsonbin';
 
 export default function TeacherCard({ teacher, index = 0, onDelete, onUpdate }) {
   const [editing, setEditing] = useState(false);
@@ -27,7 +27,7 @@ export default function TeacherCard({ teacher, index = 0, onDelete, onUpdate }) 
       let photo = teacher.photo;
       if (photoFile) {
         const base64 = photoFile.split(',')[1];
-        photo = await uploadPhotoToImgbb(base64);
+        photo = await uploadPhotoToCloudinary(base64);
       }
       const updated = { ...teacher, ...form, photo };
       if (onUpdate) onUpdate(updated);

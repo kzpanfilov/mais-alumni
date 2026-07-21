@@ -1,4 +1,4 @@
-import { HashRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -11,12 +11,22 @@ import Teachers from './pages/Teachers';
 import Gallery from './pages/Gallery';
 import News from './pages/News';
 import AddClassmate from './pages/AddClassmate';
+import Admin from './pages/Admin';
+import { trackVisit } from './data/statsData';
 import './App.css';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
   useEffect(() => {
     window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+}
+
+function TrackVisit() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    trackVisit(pathname);
   }, [pathname]);
   return null;
 }
@@ -31,8 +41,9 @@ function App() {
   }
 
   return (
-    <HashRouter>
+    <BrowserRouter basename="/mais-alumni">
       <ScrollToTop />
+      <TrackVisit />
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
@@ -43,9 +54,10 @@ function App() {
         <Route path="/gallery" element={<Gallery />} />
         <Route path="/news" element={<News />} />
         <Route path="/add" element={<AddClassmate />} />
+        <Route path="/admin" element={<Admin />} />
       </Routes>
       <Footer />
-    </HashRouter>
+    </BrowserRouter>
   );
 }
 
