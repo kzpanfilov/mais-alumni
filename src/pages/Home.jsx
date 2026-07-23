@@ -6,7 +6,7 @@ import StudentCard from '../components/StudentCard';
 import { schoolInfo } from '../data/schoolInfo';
 import { fetchClassmates, getUser, logout } from '../data/jsonbin';
 
-const PHOTO_SERVER = 'http://178.176.80.52:8080';
+const PHOTO_SERVER = 'https://178.176.80.52:8080';
 
 export default function Home() {
   const [totalStudents, setTotalStudents] = useState(0);

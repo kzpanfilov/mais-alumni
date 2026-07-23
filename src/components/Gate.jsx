@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 
-const PHOTO_SERVER = 'http://178.176.80.52:8080';
+const PHOTO_SERVER = 'https://178.176.80.52:8080';
 
 export default function Gate({ onUnlock }) {
   const [login, setLogin] = useState('');

@@ -138,7 +138,7 @@ export async function addClassmate(newStudent) {
   return saveClassmates(all);
 }
 
-const PHOTO_SERVER = 'http://178.176.80.52:8080';
+const PHOTO_SERVER = 'https://178.176.80.52:8080';
 
 export async function uploadPhotoToCloudinary(base64Data, folder = 'gallery') {
   const ext = folder === 'videos' ? 'mp4' : 'jpg';
@@ -185,7 +185,7 @@ export function exportData() {
   return JSON.stringify({ classmates: getLocal() }, null, 2);
 }
 
-const CHAT_API = 'http://178.176.80.52:8080';
+const CHAT_API = 'https://178.176.80.52:8080';
 
 export async function chatMessages(token, since = 0) {
   const res = await fetch(`${CHAT_API}/chat/messages?token=${encodeURIComponent(token)}&since=${since}`);
