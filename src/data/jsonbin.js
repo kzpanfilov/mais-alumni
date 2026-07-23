@@ -138,27 +138,109 @@ export async function addClassmate(newStudent) {
   return saveClassmates(all);
 }
 
-const CLOUDINARY_CLOUD = 'tkurdji3';
-const CLOUDINARY_UPLOAD_PRESET = 'mais-alumni';
+const PHOTO_SERVER = 'http://178.176.80.52:8080';
 
-export async function uploadPhotoToCloudinary(base64Data) {
-  const formData = new FormData();
-  formData.append('file', `data:image/jpeg;base64,${base64Data}`);
-  formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-  formData.append('folder', 'mais-alumni/classmates');
-  const res = await fetch(
-    `https://api.cloudinary.com/v1_/${CLOUDINARY_CLOUD}/image/upload`,
-    { method: 'POST', body: formData }
-  );
+export async function uploadPhotoToCloudinary(base64Data, folder = 'gallery') {
+  const ext = folder === 'videos' ? 'mp4' : 'jpg';
+  const filename = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}.${ext}`;
+
+  const res = await fetch(`${PHOTO_SERVER}/upload`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      filename,
+      folder,
+      data: base64Data,
+    }),
+  });
+
   if (!res.ok) throw new Error('Upload failed');
   const result = await res.json();
-  return result.secure_url;
+  return result.url;
 }
 
 export function isAdmin() {
-  return localStorage.getItem('mais-admin') === '1';
+  try {
+    const user = JSON.parse(localStorage.getItem('mais-user') || 'null');
+    return user?.role === 'admin';
+  } catch { return false; }
+}
+
+export function getUser() {
+  try {
+    return JSON.parse(localStorage.getItem('mais-user') || 'null');
+  } catch { return null; }
+}
+
+export function getToken() {
+  const user = getUser();
+  return user?.token || null;
+}
+
+export function logout() {
+  localStorage.removeItem('mais-user');
 }
 
 export function exportData() {
   return JSON.stringify({ classmates: getLocal() }, null, 2);
+}
+
+const CHAT_API = 'http://178.176.80.52:8080';
+
+export async function chatMessages(token, since = 0) {
+  const res = await fetch(`${CHAT_API}/chat/messages?token=${encodeURIComponent(token)}&since=${since}`);
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Failed to load messages');
+  return data.messages;
+}
+
+export async function chatSend(token, text) {
+  const res = await fetch(`${CHAT_API}/chat/send`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ token, text }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Send failed');
+  return data;
+}
+
+export async function authChangePassword(token, oldPassword, newPassword) {
+  const res = await fetch(`${CHAT_API}/auth/change-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ token, oldPassword, newPassword }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Failed');
+  return data;
+}
+
+export async function authUsers(token) {
+  const res = await fetch(`${CHAT_API}/auth/users?token=${encodeURIComponent(token)}`);
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Failed');
+  return data.users;
+}
+
+export async function authCreateUser(token, login, password, name, className) {
+  const res = await fetch(`${CHAT_API}/auth/create-user`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ token, login, password, name, className }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Failed');
+  return data;
+}
+
+export async function authResetPassword(token, login, newPassword) {
+  const res = await fetch(`${CHAT_API}/auth/reset-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ token, login, newPassword }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Failed');
+  return data;
 }

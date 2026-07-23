@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { isAdmin } from '../data/jsonbin';
+import { isAdmin, getUser, logout } from '../data/jsonbin';
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [user, setUser] = useState(() => getUser());
   const location = useLocation();
 
   useEffect(() => {
@@ -15,25 +16,30 @@ export default function Navbar() {
 
   useEffect(() => {
     setMenuOpen(false);
+    setUser(getUser());
   }, [location]);
 
-  const links = [
+  const publicLinks = [
     { to: '/', label: 'Главная' },
     { to: '/about', label: 'О школе' },
-    { to: '/class11a', label: '11а' },
-    { to: '/class11b', label: '11б' },
     { to: '/teachers', label: 'Учителя' },
     { to: '/gallery', label: 'Галерея' },
     { to: '/news', label: 'Новости' },
+  ];
+
+  const authLinks = [
+    { to: '/chat', label: '💬 Чат' },
     { to: '/add', label: '+ Добавить' },
+    { to: '/cabinet', label: '👤 Кабинет' },
     ...(isAdmin() ? [{ to: '/admin', label: '⚙ Админ' }] : []),
   ];
 
+  const links = user ? [...publicLinks, ...authLinks] : publicLinks;
+
   const handleLogout = () => {
-    localStorage.removeItem('mais-gate');
-    localStorage.removeItem('mais-admin');
-    window.location.hash = '';
-    window.location.reload();
+    logout();
+    setUser(null);
+    window.location.href = '/mais-alumni/';
   };
 
   return (
@@ -58,13 +64,21 @@ export default function Navbar() {
               {link.label}
             </Link>
           ))}
-          <button onClick={handleLogout} style={{
-            background: 'none', border: 'none', color: 'inherit', cursor: 'pointer',
-            fontFamily: 'inherit', fontSize: 'inherit', padding: 0, textDecoration: 'none',
-            opacity: 0.7, transition: 'opacity 0.2s',
-          }} onMouseOver={e => e.target.style.opacity = 1} onMouseOut={e => e.target.style.opacity = 0.7}>
-            Выйти
-          </button>
+          {user ? (
+            <button onClick={handleLogout} style={{
+              background: 'none', border: 'none', color: 'inherit', cursor: 'pointer',
+              fontFamily: 'inherit', fontSize: 'inherit', padding: 0, textDecoration: 'none',
+              opacity: 0.7, transition: 'opacity 0.2s',
+            }} onMouseOver={e => e.target.style.opacity = 1} onMouseOut={e => e.target.style.opacity = 0.7}>
+              Выйти
+            </button>
+          ) : (
+            <Link to="/" style={{
+              opacity: 0.7, transition: 'opacity 0.2s',
+            }} onMouseOver={e => e.target.style.opacity = 1} onMouseOut={e => e.target.style.opacity = 0.7}>
+              Войти
+            </Link>
+          )}
         </div>
       </div>
     </nav>

@@ -1,8 +1,7 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
-import Gate from './components/Gate';
 import Home from './pages/Home';
 import About from './pages/About';
 import Class11A from './pages/Class11A';
@@ -12,6 +11,8 @@ import Gallery from './pages/Gallery';
 import News from './pages/News';
 import AddClassmate from './pages/AddClassmate';
 import Admin from './pages/Admin';
+import Chat from './pages/Chat';
+import Cabinet from './pages/Cabinet';
 import { trackVisit } from './data/statsData';
 import './App.css';
 
@@ -32,14 +33,6 @@ function TrackVisit() {
 }
 
 function App() {
-  const [unlocked, setUnlocked] = useState(() => {
-    return !!localStorage.getItem('mais-gate');
-  });
-
-  if (!unlocked) {
-    return <Gate onUnlock={() => setUnlocked(true)} />;
-  }
-
   return (
     <BrowserRouter basename="/mais-alumni">
       <ScrollToTop />
@@ -54,6 +47,8 @@ function App() {
         <Route path="/gallery" element={<Gallery />} />
         <Route path="/news" element={<News />} />
         <Route path="/add" element={<AddClassmate />} />
+        <Route path="/chat" element={<Chat />} />
+        <Route path="/cabinet" element={<Cabinet />} />
         <Route path="/admin" element={<Admin />} />
       </Routes>
       <Footer />

@@ -15,13 +15,17 @@ export default function AddClassmate() {
     vk: '',
     thenPhoto: null,
     nowPhoto: null,
+    video: null,
   });
   const [nowPhotoPreview, setNowPhotoPreview] = useState(null);
   const [thenPhotoPreview, setThenPhotoPreview] = useState(null);
+  const [videoPreview, setVideoPreview] = useState(null);
+  const [videoName, setVideoName] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [uploading, setUploading] = useState(false);
   const nowInputRef = useRef(null);
   const thenInputRef = useRef(null);
+  const videoInputRef = useRef(null);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -43,6 +47,18 @@ export default function AddClassmate() {
     reader.readAsDataURL(file);
   };
 
+  const handleVideoChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setVideoName(file.name);
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      setVideoPreview(ev.target.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.name.trim()) return;
@@ -52,6 +68,7 @@ export default function AddClassmate() {
     try {
       let thenPhotoUrl = formData.thenPhoto;
       let nowPhotoUrl = formData.nowPhoto;
+      let videoUrl = formData.video;
 
       if (thenPhotoPreview && !thenPhotoUrl) {
         const base64 = thenPhotoPreview.split(',')[1];
@@ -63,11 +80,17 @@ export default function AddClassmate() {
         nowPhotoUrl = await uploadPhotoToCloudinary(base64);
       }
 
+      if (videoPreview && !videoUrl) {
+        const base64 = videoPreview.split(',')[1];
+        videoUrl = await uploadPhotoToCloudinary(base64, 'videos');
+      }
+
       const existing = await fetchClassmates();
       const newClassmate = {
         ...formData,
         thenPhoto: thenPhotoUrl,
         nowPhoto: nowPhotoUrl,
+        video: videoUrl,
         id: Date.now(),
         addedAt: new Date().toISOString(),
       };
@@ -83,9 +106,11 @@ export default function AddClassmate() {
 
   const resetForm = () => {
     setSubmitted(false);
-    setFormData({ name: '', className: '11а', role: '', memory: '', occupation: '', city: '', phone: '', vk: '', thenPhoto: null, nowPhoto: null });
+    setFormData({ name: '', className: '11а', role: '', memory: '', occupation: '', city: '', phone: '', vk: '', thenPhoto: null, nowPhoto: null, video: null });
     setNowPhotoPreview(null);
     setThenPhotoPreview(null);
+    setVideoPreview(null);
+    setVideoName('');
   };
 
   const inputStyle = {
@@ -277,9 +302,9 @@ export default function AddClassmate() {
 
             <div style={{ marginBottom: 24 }}>
               <label style={{ display: 'block', marginBottom: 8, fontWeight: 600, fontSize: '0.9rem' }}>
-                Фотографии
+                Фотографии и видео
               </label>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
                 <div>
                   <input
                     ref={thenInputRef}
@@ -327,6 +352,33 @@ export default function AddClassmate() {
                     <div>
                       <div style={{ fontWeight: 500, fontSize: '0.85rem' }}>Фото сейчас</div>
                       <div style={{ color: 'var(--text-light)', fontSize: '0.75rem' }}>Нажмите для загрузки</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <input
+                  ref={videoInputRef}
+                  type="file"
+                  accept="video/*"
+                  onChange={handleVideoChange}
+                  style={{ display: 'none' }}
+                />
+                <div
+                  onClick={() => videoInputRef.current?.click()}
+                  style={photoUploadStyle}
+                  onMouseOver={e => e.currentTarget.style.borderColor = 'var(--accent)'}
+                  onMouseOut={e => e.currentTarget.style.borderColor = 'var(--border)'}
+                >
+                  {videoPreview ? (
+                    <video src={videoPreview} style={{ width: 48, height: 48, borderRadius: 8, objectFit: 'cover' }} />
+                  ) : (
+                    <span style={{ fontSize: '1.5rem' }}>🎥</span>
+                  )}
+                  <div>
+                    <div style={{ fontWeight: 500, fontSize: '0.85rem' }}>Видео (необязательно)</div>
+                    <div style={{ color: 'var(--text-light)', fontSize: '0.75rem' }}>
+                      {videoName || 'Нажмите для загрузки'}
                     </div>
                   </div>
                 </div>

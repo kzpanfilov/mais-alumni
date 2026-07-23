@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import HeroSection from '../components/HeroSection';
 import NewsEditor from '../components/NewsEditor';
-import { isAdmin, uploadPhotoToCloudinary } from '../data/jsonbin';
+import { isAdmin, uploadPhotoToCloudinary, getToken, authUsers, authCreateUser, authResetPassword } from '../data/jsonbin';
 import { fetchNews, addNews, updateNews, deleteNews } from '../data/newsData';
 import { fetchGallery, addGalleryItem, deleteGalleryItem } from '../data/galleryData';
 import { getAdminStats, forceSync } from '../data/statsData';
@@ -11,19 +11,29 @@ export default function Admin() {
   const [tab, setTab] = useState('news');
   const [news, setNews] = useState([]);
   const [gallery, setGallery] = useState([]);
+  const [users, setUsers] = useState([]);
   const [editingNews, setEditingNews] = useState(null);
   const [showNewsForm, setShowNewsForm] = useState(false);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState(null);
   const [syncing, setSyncing] = useState(false);
+  const [newUserLogin, setNewUserLogin] = useState('');
+  const [newUserPassword, setNewUserPassword] = useState('');
+  const [newUserName, setNewUserName] = useState('');
+  const [newUserClass, setNewUserClass] = useState('');
+  const [resetLogin, setResetLogin] = useState('');
+  const [resetPassword, setResetPassword] = useState('');
+  const [userMessage, setUserMessage] = useState('');
+  const [userError, setUserError] = useState('');
   const galleryRef = useRef(null);
 
   useEffect(() => {
     if (!isAdmin()) return;
-    Promise.all([fetchNews(), fetchGallery(), getAdminStats()]).then(([n, g, s]) => {
+    Promise.all([fetchNews(), fetchGallery(), getAdminStats(), authUsers(getToken())]).then(([n, g, s, u]) => {
       setNews(n);
       setGallery(g);
       setStats(s);
+      setUsers(u);
       setLoading(false);
     });
   }, []);
@@ -127,6 +137,11 @@ export default function Admin() {
               background: tab === 'stats' ? 'var(--accent)' : '#eee',
               color: tab === 'stats' ? 'white' : '#333',
             }}>Статистика</button>
+            <button onClick={() => setTab('users')} style={{
+              ...btnStyle,
+              background: tab === 'users' ? 'var(--accent)' : '#eee',
+              color: tab === 'users' ? 'white' : '#333',
+            }}>Пользователи</button>
           </div>
 
           {loading ? (
@@ -252,6 +267,129 @@ export default function Admin() {
               ) : (
                 <p style={{ textAlign: 'center', color: 'var(--text-light)' }}>Загрузка статистики...</p>
               )}
+            </div>
+          ) : tab === 'users' ? (
+            <div>
+              <h2 style={{ margin: '0 0 20px 0', fontSize: '1.2rem' }}>Пользователи ({users.length})</h2>
+
+              <div style={{ background: 'var(--bg-card)', borderRadius: 10, padding: 20, boxShadow: 'var(--shadow)', marginBottom: 24 }}>
+                <h3 style={{ fontSize: '1rem', marginBottom: 16 }}>Создать пользователя</h3>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
+                  <input
+                    type="text"
+                    placeholder="Логин (ФамилияИ)"
+                    value={newUserLogin}
+                    onChange={e => setNewUserLogin(e.target.value)}
+                    style={{ padding: '8px 12px', borderRadius: 8, border: '2px solid var(--border)', fontSize: '0.9rem' }}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Пароль"
+                    value={newUserPassword}
+                    onChange={e => setNewUserPassword(e.target.value)}
+                    style={{ padding: '8px 12px', borderRadius: 8, border: '2px solid var(--border)', fontSize: '0.9rem' }}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Имя (Фамилия Имя)"
+                    value={newUserName}
+                    onChange={e => setNewUserName(e.target.value)}
+                    style={{ padding: '8px 12px', borderRadius: 8, border: '2px solid var(--border)', fontSize: '0.9rem' }}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Класс (11а)"
+                    value={newUserClass}
+                    onChange={e => setNewUserClass(e.target.value)}
+                    style={{ padding: '8px 12px', borderRadius: 8, border: '2px solid var(--border)', fontSize: '0.9rem' }}
+                  />
+                </div>
+                <button
+                  onClick={async () => {
+                    setUserError('');
+                    setUserMessage('');
+                    try {
+                      await authCreateUser(getToken(), newUserLogin, newUserPassword, newUserName, newUserClass);
+                      setUsers(await authUsers(getToken()));
+                      setNewUserLogin('');
+                      setNewUserPassword('');
+                      setNewUserName('');
+                      setNewUserClass('');
+                      setUserMessage('Пользователь создан');
+                    } catch (err) {
+                      setUserError(err.message);
+                    }
+                  }}
+                  disabled={!newUserLogin || !newUserPassword || !newUserName}
+                  style={{
+                    ...primaryBtn,
+                    opacity: newUserLogin && newUserPassword && newUserName ? 1 : 0.5,
+                  }}
+                >
+                  Создать
+                </button>
+              </div>
+
+              <div style={{ background: 'var(--bg-card)', borderRadius: 10, padding: 20, boxShadow: 'var(--shadow)', marginBottom: 24 }}>
+                <h3 style={{ fontSize: '1rem', marginBottom: 16 }}>Сбросить пароль</h3>
+                <div style={{ display: 'flex', gap: 12, marginBottom: 12, flexWrap: 'wrap' }}>
+                  <select
+                    value={resetLogin}
+                    onChange={e => setResetLogin(e.target.value)}
+                    style={{ padding: '8px 12px', borderRadius: 8, border: '2px solid var(--border)', fontSize: '0.9rem', minWidth: 200 }}
+                  >
+                    <option value="">Выберите пользователя</option>
+                    {users.map(u => (
+                      <option key={u.login} value={u.login}>{u.name} ({u.login})</option>
+                    ))}
+                  </select>
+                  <input
+                    type="text"
+                    placeholder="Новый пароль"
+                    value={resetPassword}
+                    onChange={e => setResetPassword(e.target.value)}
+                    style={{ padding: '8px 12px', borderRadius: 8, border: '2px solid var(--border)', fontSize: '0.9rem' }}
+                  />
+                  <button
+                    onClick={async () => {
+                      setUserError('');
+                      setUserMessage('');
+                      if (!resetLogin || !resetPassword) return;
+                      try {
+                        await authResetPassword(getToken(), resetLogin, resetPassword);
+                        setResetLogin('');
+                        setResetPassword('');
+                        setUserMessage('Пароль сброшен');
+                      } catch (err) {
+                        setUserError(err.message);
+                      }
+                    }}
+                    disabled={!resetLogin || !resetPassword}
+                    style={{
+                      ...secondaryBtn,
+                      opacity: resetLogin && resetPassword ? 1 : 0.5,
+                    }}
+                  >
+                    Сбросить
+                  </button>
+                </div>
+              </div>
+
+              {userMessage && <p style={{ color: '#27ae60', fontSize: '0.85rem', marginBottom: 12 }}>{userMessage}</p>}
+              {userError && <p style={{ color: '#e74c3c', fontSize: '0.85rem', marginBottom: 12 }}>{userError}</p>}
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {users.map(u => (
+                  <div key={u.login} style={{ background: 'var(--bg-card)', borderRadius: 8, padding: '12px 16px', boxShadow: 'var(--shadow)', display: 'flex', gap: 16, alignItems: 'center' }}>
+                    <div style={{ fontWeight: 600, fontSize: '0.95rem', flex: 1 }}>{u.name}</div>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--text-light)', fontFamily: 'monospace' }}>{u.login}</div>
+                    <div style={{ fontSize: '0.8rem', color: 'var(--text-light)' }}>{u.className}</div>
+                    <div style={{ fontSize: '0.75rem', padding: '2px 8px', borderRadius: 4, background: u.role === 'admin' ? 'var(--accent)' : '#eee', color: u.role === 'admin' ? 'white' : '#666' }}>
+                      {u.role === 'admin' ? 'Админ' : 'Участник'}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           ) : (
             <div>

@@ -1,41 +1,42 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 
-// SHA-256 hashes
-// Key: MAIS2006
-const USER_HASH = '84ec621a831280a1324daf83b4a14ce88f6f68d34f7578a59e5528cf08504587';
-// Key: MAIS2006ADMIN
-const ADMIN_HASH = '81d70d7bab32b2c4a20099942cbd6f59717418532821242cbc0392d2bff67ebe';
-
-async function sha256(message) {
-  const msgBuffer = new TextEncoder().encode(message);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-}
+const PHOTO_SERVER = 'http://178.176.80.52:8080';
 
 export default function Gate({ onUnlock }) {
-  const [key, setKey] = useState('');
-  const [error, setError] = useState(false);
+  const [login, setLogin] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError(false);
+    setError('');
 
-    const hash = await sha256(key.trim().toUpperCase());
+    try {
+      const res = await fetch(`${PHOTO_SERVER}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ login: login.trim(), password }),
+      });
 
-    if (hash === ADMIN_HASH) {
-      localStorage.setItem('mais-gate', hash);
-      localStorage.setItem('mais-admin', '1');
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || 'Неверный логин или пароль');
+        setLoading(false);
+        return;
+      }
+
+      localStorage.setItem('mais-user', JSON.stringify({
+        token: data.token,
+        ...data.user,
+      }));
+
       onUnlock();
-    } else if (hash === USER_HASH) {
-      localStorage.setItem('mais-gate', hash);
-      localStorage.removeItem('mais-admin');
-      onUnlock();
-    } else {
-      setError(true);
+    } catch (err) {
+      setError('Ошибка подключения к серверу');
       setLoading(false);
     }
   };
@@ -78,22 +79,35 @@ export default function Gate({ onUnlock }) {
           Маисская средняя школа
         </h1>
         <p style={{ color: 'var(--text-secondary)', marginBottom: 24, fontSize: '0.9rem' }}>
-          Введите ключ доступа для просмотра сайта
+          Войдите, чтобы вспомнить школьные годы
         </p>
 
         <form onSubmit={handleSubmit}>
           <input
             type="text"
-            value={key}
-            onChange={(e) => { setKey(e.target.value); setError(false); }}
-            placeholder="Введите ключ..."
+            value={login}
+            onChange={(e) => { setLogin(e.target.value); setError(''); }}
+            placeholder="Логин (например: КузянинМ)"
             autoFocus
             style={{
               width: '100%', padding: '12px 16px', borderRadius: 8,
               border: `2px solid ${error ? '#e74c3c' : 'var(--border)'}`,
               fontSize: '1rem', textAlign: 'center',
               outline: 'none', transition: 'border 0.2s',
-              letterSpacing: 2, fontWeight: 600,
+              boxSizing: 'border-box', marginBottom: 12,
+            }}
+          />
+
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => { setPassword(e.target.value); setError(''); }}
+            placeholder="Пароль"
+            style={{
+              width: '100%', padding: '12px 16px', borderRadius: 8,
+              border: `2px solid ${error ? '#e74c3c' : 'var(--border)'}`,
+              fontSize: '1rem', textAlign: 'center',
+              outline: 'none', transition: 'border 0.2s',
               boxSizing: 'border-box',
             }}
           />
@@ -104,28 +118,28 @@ export default function Gate({ onUnlock }) {
               animate={{ opacity: 1 }}
               style={{ color: '#e74c3c', fontSize: '0.85rem', marginTop: 8 }}
             >
-              Неверный ключ. Обратитесь к организатору.
+              {error}
             </motion.p>
           )}
 
           <button
             type="submit"
-            disabled={!key.trim() || loading}
+            disabled={!login.trim() || !password || loading}
             style={{
               width: '100%', padding: '12px 24px', borderRadius: 50,
-              background: key.trim() ? 'var(--accent)' : '#ccc',
+              background: login.trim() && password ? 'var(--accent)' : '#ccc',
               color: 'white', border: 'none',
               fontSize: '1rem', fontWeight: 600,
-              cursor: key.trim() ? 'pointer' : 'not-allowed',
+              cursor: login.trim() && password ? 'pointer' : 'not-allowed',
               marginTop: 16, transition: 'background 0.2s',
             }}
           >
-            {loading ? 'Проверка...' : 'Войти'}
+            {loading ? 'Вход...' : 'Войти'}
           </button>
         </form>
 
         <p style={{ color: 'var(--text-light)', fontSize: '0.75rem', marginTop: 20 }}>
-          Ключ можно получить у организатора встречи
+          Логин: фамилия + первая буква имени (например: КузянинМ)
         </p>
       </motion.div>
     </div>
