@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { isAdmin, getUser, logout } from '../data/jsonbin';
-
-const PHOTO_SERVER = 'https://178.176.80.52:8080';
+import { isAdmin, getUser, logout, authLogin } from '../data/jsonbin';
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -56,21 +54,7 @@ export default function Navbar() {
     setLoginError('');
 
     try {
-      const res = await fetch(`${PHOTO_SERVER}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ login: login.trim(), password }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        setLoginError(data.error || 'Неверный логин или пароль');
-        setLoginLoading(false);
-        return;
-      }
-
-      const userData = { token: data.token, ...data.user };
+      const userData = await authLogin(login.trim(), password);
       localStorage.setItem('mais-user', JSON.stringify(userData));
       setUser(userData);
       setShowLogin(false);
@@ -78,7 +62,7 @@ export default function Navbar() {
       setPassword('');
       window.location.reload();
     } catch (err) {
-      setLoginError('Ошибка подключения к серверу');
+      setLoginError(err.message || 'Ошибка входа');
       setLoginLoading(false);
     }
   };

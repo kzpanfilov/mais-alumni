@@ -2,13 +2,17 @@ const GIST_ID = 'c81621b96ae0e79546cb2ad51922c951';
 const _t = ['ghp_K9btdg','k5HBSUAh0v','Uow6Ee8m24','FYQf2b0pf4'];
 const GITHUB_TOKEN = _t.join('');
 const GIST_RAW = `https://gist.githubusercontent.com/kzpanfilov/${GIST_ID}/raw/classmates.json`;
+const GIST_USERS_RAW = `https://gist.githubusercontent.com/kzpanfilov/${GIST_ID}/raw/users.json`;
 const GIST_API = `https://api.github.com/gists/${GIST_ID}`;
 
 const BASE = import.meta.env.BASE_URL || '/';
 const STATIC_URL = `${BASE}data/classmates.json`;
+const STATIC_USERS_URL = `${BASE}data/users.json`;
 
 let cache = null;
 let cacheTime = 0;
+let usersCache = null;
+let usersCacheTime = 0;
 
 function getLocal() {
   try { return JSON.parse(localStorage.getItem('mais-classmates') || '[]'); } catch { return []; }
@@ -36,19 +40,58 @@ async function readGist() {
   } catch { return []; }
 }
 
-async function writeGist(classmates) {
+async function readGistUsers() {
+  try {
+    const res = await fetch(`${GIST_USERS_RAW}?t=${Date.now()}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  } catch { return null; }
+}
+
+async function readStaticUsers() {
+  try {
+    const res = await fetch(`${STATIC_USERS_URL}?t=${Date.now()}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  } catch { return null; }
+}
+
+async function fetchUsers() {
+  if (usersCache && Date.now() - usersCacheTime < 5000) return usersCache;
+
+  const [gistUsers, staticUsers] = await Promise.all([
+    readGistUsers(),
+    readStaticUsers(),
+  ]);
+
+  usersCache = gistUsers || staticUsers || {};
+  usersCacheTime = Date.now();
+  return usersCache;
+}
+
+async function writeGistWithUsers(classmates, users) {
+  const files = {};
+  if (classmates !== undefined) {
+    files['classmates.json'] = { content: JSON.stringify({ classmates }, null, 2) };
+  }
+  if (users !== undefined) {
+    files['users.json'] = { content: JSON.stringify(users, null, 2) };
+  }
+
   const res = await fetch(GIST_API, {
     method: 'PATCH',
     headers: {
       'Authorization': `token ${GITHUB_TOKEN}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({
-      files: { 'classmates.json': { content: JSON.stringify({ classmates }, null, 2) } },
-    }),
+    body: JSON.stringify({ files }),
   });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   return true;
+}
+
+async function writeGist(classmates) {
+  return writeGistWithUsers(classmates, undefined);
 }
 
 async function syncToRepo(classmates) {
@@ -174,7 +217,7 @@ export function getUser() {
 
 export function getToken() {
   const user = getUser();
-  return user?.token || null;
+  return user?.login || null;
 }
 
 export function logout() {
@@ -185,7 +228,77 @@ export function exportData() {
   return JSON.stringify({ classmates: getLocal() }, null, 2);
 }
 
-const CHAT_API = 'https://178.176.80.52:8080';
+export async function authLogin(login, password) {
+  const users = await fetchUsers();
+  const user = users[login];
+  if (!user) throw new Error('Неверный логин или пароль');
+  if (user.password !== password) throw new Error('Неверный логин или пароль');
+  return {
+    token: login,
+    login,
+    name: user.name,
+    role: user.role,
+    className: user.className,
+  };
+}
+
+export async function authChangePassword(login, oldPassword, newPassword) {
+  const users = await fetchUsers();
+  if (!users[login]) throw new Error('Пользователь не найден');
+  if (users[login].password !== oldPassword) throw new Error('Неверный текущий пароль');
+  if (newPassword.length < 4) throw new Error('Пароль должен быть не менее 4 символов');
+
+  users[login].password = newPassword;
+  usersCache = users;
+  usersCacheTime = Date.now();
+  await writeGistWithUsers(undefined, users);
+  return { ok: true };
+}
+
+export async function authUsers() {
+  const users = await fetchUsers();
+  return Object.entries(users).map(([login, u]) => ({
+    login,
+    name: u.name,
+    className: u.className,
+    role: u.role,
+  }));
+}
+
+export async function authCreateUser(token, login, password, name, className) {
+  const users = await fetchUsers();
+  const admin = users[token];
+  if (!admin || admin.role !== 'admin') throw new Error('Нет доступа');
+  if (!login || !password || !name) throw new Error('Заполните все поля');
+  if (users[login]) throw new Error('Пользователь уже существует');
+
+  users[login] = {
+    password,
+    name,
+    className,
+    role: 'user',
+    createdAt: new Date().toISOString(),
+  };
+  usersCache = users;
+  usersCacheTime = Date.now();
+  await writeGistWithUsers(undefined, users);
+  return { ok: true };
+}
+
+export async function authResetPassword(token, login, newPassword) {
+  const users = await fetchUsers();
+  const admin = users[token];
+  if (!admin || admin.role !== 'admin') throw new Error('Нет доступа');
+  if (!users[login]) throw new Error('Пользователь не найден');
+
+  users[login].password = newPassword;
+  usersCache = users;
+  usersCacheTime = Date.now();
+  await writeGistWithUsers(undefined, users);
+  return { ok: true };
+}
+
+const CHAT_API = 'http://178.176.80.52:8080';
 
 export async function chatMessages(token, since = 0) {
   const res = await fetch(`${CHAT_API}/chat/messages?token=${encodeURIComponent(token)}&since=${since}`);
@@ -202,45 +315,5 @@ export async function chatSend(token, text) {
   });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || 'Send failed');
-  return data;
-}
-
-export async function authChangePassword(token, oldPassword, newPassword) {
-  const res = await fetch(`${CHAT_API}/auth/change-password`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ token, oldPassword, newPassword }),
-  });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error || 'Failed');
-  return data;
-}
-
-export async function authUsers(token) {
-  const res = await fetch(`${CHAT_API}/auth/users?token=${encodeURIComponent(token)}`);
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error || 'Failed');
-  return data.users;
-}
-
-export async function authCreateUser(token, login, password, name, className) {
-  const res = await fetch(`${CHAT_API}/auth/create-user`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ token, login, password, name, className }),
-  });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error || 'Failed');
-  return data;
-}
-
-export async function authResetPassword(token, login, newPassword) {
-  const res = await fetch(`${CHAT_API}/auth/reset-password`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ token, login, newPassword }),
-  });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error || 'Failed');
   return data;
 }

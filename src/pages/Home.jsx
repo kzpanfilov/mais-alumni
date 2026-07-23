@@ -4,9 +4,7 @@ import { Link } from 'react-router-dom';
 import HeroSection from '../components/HeroSection';
 import StudentCard from '../components/StudentCard';
 import { schoolInfo } from '../data/schoolInfo';
-import { fetchClassmates, getUser, logout } from '../data/jsonbin';
-
-const PHOTO_SERVER = 'https://178.176.80.52:8080';
+import { fetchClassmates, getUser, logout, authLogin } from '../data/jsonbin';
 
 export default function Home() {
   const [totalStudents, setTotalStudents] = useState(0);
@@ -36,28 +34,14 @@ export default function Home() {
     setLoginError('');
 
     try {
-      const res = await fetch(`${PHOTO_SERVER}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ login: login.trim(), password }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        setLoginError(data.error || 'Неверный логин или пароль');
-        setLoginLoading(false);
-        return;
-      }
-
-      const userData = { token: data.token, ...data.user };
+      const userData = await authLogin(login.trim(), password);
       localStorage.setItem('mais-user', JSON.stringify(userData));
       setUser(userData);
       setShowLogin(false);
       setLogin('');
       setPassword('');
     } catch (err) {
-      setLoginError('Ошибка подключения к серверу');
+      setLoginError(err.message || 'Ошибка входа');
       setLoginLoading(false);
     }
   };
