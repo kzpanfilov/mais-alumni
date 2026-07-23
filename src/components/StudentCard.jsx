@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { isAdmin, deleteClassmate, updateClassmate, uploadPhotoToCloudinary } from '../data/jsonbin';
+import { isAdmin, deleteClassmate, updateClassmate, uploadPhotoToCloudinary, fixPhotoUrl } from '../data/jsonbin';
 
 const BASE = import.meta.env.BASE_URL || '/';
 
@@ -229,7 +229,7 @@ export default function StudentCard({ student, index = 0, onDelete, myProfile })
     .join('')
     .slice(0, 2);
 
-  const photo = (p) => p ? (p.startsWith('/') ? BASE + p.slice(1) : p) : null;
+  const photo = (p) => p ? fixPhotoUrl(p.startsWith('/') ? BASE + p.slice(1) : p) : null;
   const nowPhoto = photo(updatedStudent.nowPhoto);
   const thenPhoto = photo(updatedStudent.thenPhoto);
   const admin = isAdmin();

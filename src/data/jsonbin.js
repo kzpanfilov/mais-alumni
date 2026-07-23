@@ -298,7 +298,12 @@ export async function authResetPassword(token, login, newPassword) {
   return { ok: true };
 }
 
-const CHAT_API = 'http://178.176.80.52:8080';
+export function fixPhotoUrl(url) {
+  if (!url) return url;
+  return url.replace(/^http:\/\//, 'https://');
+}
+
+const CHAT_API = 'https://178.176.80.52:8080';
 
 export async function chatMessages(token, since = 0) {
   const res = await fetch(`${CHAT_API}/chat/messages?token=${encodeURIComponent(token)}&since=${since}`);
