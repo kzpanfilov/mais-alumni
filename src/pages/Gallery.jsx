@@ -37,6 +37,7 @@ const staticGalleryItems = [
 
 function Lightbox({ items, index, onClose, onPrev, onNext }) {
   const item = items[index];
+  const isVideo = item.type === 'video';
   useEffect(() => {
     const handleKey = (e) => {
       if (e.key === 'Escape') onClose();
@@ -52,9 +53,15 @@ function Lightbox({ items, index, onClose, onPrev, onNext }) {
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}
       style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(0,0,0,0.92)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', cursor: 'pointer' }}>
       <div onClick={e => e.stopPropagation()} style={{ position: 'relative', maxWidth: '90vw', maxHeight: '80vh' }}>
-        <motion.img key={item.id} src={item.src} alt={item.title}
-          initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
-          style={{ maxWidth: '90vw', maxHeight: '75vh', borderRadius: 8, display: 'block' }} />
+        {isVideo ? (
+          <motion.video key={item.id} src={item.src} controls autoPlay
+            initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
+            style={{ maxWidth: '90vw', maxHeight: '75vh', borderRadius: 8, display: 'block' }} />
+        ) : (
+          <motion.img key={item.id} src={item.src} alt={item.title}
+            initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
+            style={{ maxWidth: '90vw', maxHeight: '75vh', borderRadius: 8, display: 'block' }} />
+        )}
         <div style={{ textAlign: 'center', marginTop: 12, color: '#fff' }}>
           <div style={{ fontWeight: 600 }}>{item.title}</div>
           {item.year && <div style={{ fontSize: '0.85rem', opacity: 0.7 }}>{item.year}</div>}
@@ -91,8 +98,8 @@ export default function Gallery() {
     <div>
       <HeroSection
         title="Галерея"
-        subtitle="Фотографии села Маис и нашей школы из разных лет"
-        badge={`${galleryItems.length} фотографий`}
+        subtitle="Фотографии и видео села Маис и нашей школы из разных лет"
+        badge={`${galleryItems.length} материалов`}
       />
       <section className="section">
         <div className="container">
@@ -115,7 +122,16 @@ export default function Gallery() {
                 transition={{ duration: 0.4, delay: index * 0.05 }} whileHover={{ scale: 1.03 }}
                 onClick={() => setLightbox(index)}
                 style={{ position: 'relative', overflow: 'hidden', borderRadius: 'var(--radius)', background: '#000', cursor: 'pointer' }}>
-                <img src={item.src} alt={item.title} style={{ width: '100%', height: 200, objectFit: 'cover', display: 'block' }} loading="lazy" />
+                {item.type === 'video' ? (
+                  <video src={item.src} style={{ width: '100%', height: 200, objectFit: 'cover', display: 'block' }} preload="metadata" muted />
+                ) : (
+                  <img src={item.src} alt={item.title} style={{ width: '100%', height: 200, objectFit: 'cover', display: 'block' }} loading="lazy" />
+                )}
+                {item.type === 'video' && (
+                  <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: 48, height: 48, borderRadius: '50%', background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', pointerEvents: 'none' }}>
+                    <div style={{ width: 0, height: 0, borderLeft: '18px solid #fff', borderTop: '11px solid transparent', borderBottom: '11px solid transparent', marginLeft: 4 }} />
+                  </div>
+                )}
                 <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'linear-gradient(transparent, rgba(0,0,0,0.8))', padding: '30px 12px 12px' }}>
                   <div style={{ color: '#fff', fontWeight: 600, fontSize: '0.9rem' }}>{item.title}</div>
                   {item.year && <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.75rem' }}>{item.year}</div>}
