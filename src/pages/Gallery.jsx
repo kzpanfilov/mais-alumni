@@ -17,8 +17,21 @@ const staticGalleryItems = [
   { id: 8, title: 'ДК до ремонта', year: '2021', src: `${PHOTOS}dk-before.jpg`, description: 'Дом культуры до ремонта', category: 'Наше село' },
   { id: 9, title: 'Храм', year: '', src: `${PHOTOS}church.jpg`, description: 'Храм Боголюбской Иконы Божией Матери', category: 'Наше село' },
   { id: 10, title: 'Мемориал', year: '', src: `${PHOTOS}memorial.jpg`, description: 'Памятник погибшим воинам', category: 'Наше село' },
-  ...[1, 2, 3, 4, 6, 7, 10, 11, 12, 14, 15].map((n, i) => ({
-    id: 11 + i, title: `Фото ${i + 1}`, year: '', src: `${PHOTOS}photo_${n}_2026-07-19_15-27-38.jpg`, description: 'Фото выпускников', category: 'Выпускники',
+  ...[
+    { n: 1, id: 11 }, { n: 2, id: 12 }, { n: 3, id: 13 }, { n: 4, id: 14 },
+    { n: 6, id: 15 }, { n: 7, id: 16 },
+    { n: 10, id: 17 }, { n: 11, id: 18 }, { n: 12, id: 19 },
+    { n: 14, id: 20 }, { n: 15, id: 21 },
+  ].map((item, i) => ({
+    id: item.id, title: `Фото ${i + 1}`, year: '', src: `${PHOTOS}photo_${item.n}_2026-07-19_15-27-38.jpg`, description: 'Фото выпускников', category: 'Выпускники',
+  })),
+  ...[
+    { n: 5, id: 22, version: 'v1784875056' },
+    { n: 8, id: 23, version: 'v1784875058' },
+    { n: 9, id: 24, version: 'v1784875060' },
+    { n: 13, id: 25, version: 'v1784875062' },
+  ].map((item, i) => ({
+    id: item.id, title: `Фото ${12 + i}`, year: '', src: `https://res.cloudinary.com/tkurdji3/image/upload/${item.version}/mais-alumni/restored/photo_${item.n}_2026-07-19_15-27-38.jpg`, description: 'Фото выпускников', category: 'Выпускники',
   })),
 ];
 
